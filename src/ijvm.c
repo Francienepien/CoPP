@@ -18,8 +18,36 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
   m->out = output;
   
   // TODO: implement me
+  FILE* binaryFile = fopen(binary_path, "rb");
+  
+  uint8_t readMagicNumber[4];
+  fread(&readMagicNumber, sizeof(uint8_t), 4, binaryFile);
+  uint32_t magicNumber = read_uint32(readMagicNumber);
+  if (magicNumber != MAGIC_NUMBER) {
+    return NULL;
+  }
 
+  uint8_t binConstSize[4];
+  fread(&binConstSize, sizeof(uint8_t), 4, binaryFile);
+  fread(&binConstSize, sizeof(uint8_t), 4, binaryFile);
+  m->constSize = read_uint32(binConstSize);
+
+  uint8_t constants[m->constSize];
+  fread(&constants, sizeof(uint8_t), m->constSize, binaryFile);
+
+  uint8_t binTextSize[4];
+  fread(&binTextSize, sizeof(uint8_t), 4, binaryFile);
+  fread(&binTextSize, sizeof(uint8_t), 4, binaryFile);
+  m->textSize = read_uint32(binTextSize);
+
+  uint8_t text[m->textSize];
+  fread(&text, sizeof(uint8_t), m->textSize, binaryFile);
+ 
   return m;
+
+  /* TO ASK:
+    better way to function out fread (does fread counter continue on different function calls)
+  */
 }
 
 void destroy_ijvm(ijvm* m) 
@@ -32,13 +60,13 @@ void destroy_ijvm(ijvm* m)
 byte_t *get_text(ijvm* m) 
 {
   // TODO: implement me
-  return NULL;
+  return 0;
 }
 
 unsigned int get_text_size(ijvm* m) 
 {
   // TODO: implement me
-  return 0;
+  return m->textSize;
 }
 
 word_t get_constant(ijvm* m,int i) 
