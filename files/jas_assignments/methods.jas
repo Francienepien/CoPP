@@ -1,0 +1,54 @@
+.constant
+    objref 0xb00b
+.end-constant
+  
+  
+.main
+    .var
+        count
+    .end-var
+
+    IN
+    ISTORE count
+
+    LDC_W objref
+    ILOAD count
+    INVOKEVIRTUAL is_even
+
+.end-main
+
+.method is_even(count)
+    ILOAD count
+    IFEQ end_even
+    ILOAD count
+    BIPUSH 0x01
+    ISUB
+    ISTORE count
+    LDC_W objref
+    ILOAD count
+    INVOKEVIRTUAL is_odd
+    IRETURN
+
+    end_even:
+        BIPUSH 0x54
+        OUT
+        IRETURN
+.end-method
+
+.method is_odd(count)
+    ILOAD count
+    IFEQ end_odd
+    ILOAD count
+    BIPUSH 0x01
+    ISUB
+    ISTORE count
+    LDC_W objref
+    ILOAD count
+    INVOKEVIRTUAL is_even
+    IRETURN
+
+    end_odd:
+        BIPUSH 0x46
+        OUT
+        IRETURN
+.end-method

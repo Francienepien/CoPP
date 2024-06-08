@@ -1,0 +1,46 @@
+.constant
+   
+.end-constant
+  
+  
+.main
+    
+    IN
+    IN
+
+    DUP
+    DUP
+    DUP
+    DUP
+
+    IN
+
+    DUP
+    BIPUSH 3
+    IADD
+    OUT
+
+    IADD
+    DUP
+    OUT
+
+    SWAP
+    ISUB
+    SWAP
+    ISUB
+    DUP
+    OUT
+
+    IADD
+    IADD
+    IADD
+    BIPUSH 10
+    ISUB
+    OUT
+
+    // print y + z
+    // print z - y
+    // print x + y + z - 10
+
+.end-main
+  

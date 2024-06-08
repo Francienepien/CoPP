@@ -1,0 +1,36 @@
+.constant
+   
+.end-constant
+  
+  
+.main
+    
+    IN //x
+    IN //y
+
+    SWAP
+    DUP
+    OUT
+    SWAP
+
+loop:
+    DUP
+    IFEQ end
+    BIPUSH 1
+    ISUB
+    
+    SWAP
+    BIPUSH 2
+    IADD
+    
+    DUP
+    OUT
+
+    SWAP
+
+    GOTO loop
+
+end:
+
+.end-main
+  

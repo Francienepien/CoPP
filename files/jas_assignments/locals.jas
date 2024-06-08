@@ -1,0 +1,48 @@
+.constant
+   
+.end-constant
+  
+  
+.main
+
+.var 
+x
+y
+z
+.end-var
+
+IN
+ISTORE x
+
+IN
+ISTORE y
+
+IN
+ISTORE z
+
+ILOAD x
+BIPUSH 3
+IADD
+OUT
+
+ILOAD x
+ILOAD z
+IADD
+OUT
+
+ILOAD z
+ILOAD y
+ISUB
+OUT
+
+ILOAD z
+ILOAD x
+ILOAD y
+IADD
+IADD
+BIPUSH 10
+ISUB
+OUT
+
+.end-main
+  
