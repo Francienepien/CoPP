@@ -18,48 +18,41 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
   m->out = output;
   
   // TODO: implement me
-  
   FILE* binaryFile = fopen(binary_path, "rb");
-
-  byte_t *magicNumberBin = (byte_t *) malloc(sizeof(byte_t) * 4);
-  fread(&magicNumberBin, sizeof(byte_t), 4, binaryFile);
-
-  int fileMagicNumber = read_uint32(magicNumberBin);
-  if (fileMagicNumber != MAGIC_NUMBER) {
+  
+  uint8_t readMagicNumber[4];
+  fread(&readMagicNumber, sizeof(uint8_t), 4, binaryFile);
+  uint32_t magicNumber = read_uint32(readMagicNumber);
+  if (magicNumber != MAGIC_NUMBER) {
     return NULL;
   }
 
-  fseek(binaryFile, 4, SEEK_CUR);
-  m->constantSize = (byte_t *) malloc(sizeof(byte_t) * 4);
-  fread(&m->constantSize, sizeof(byte_t), 4, binaryFile);
+  uint8_t binConstSize[4];
+  fread(&binConstSize, sizeof(uint8_t), 4, binaryFile);
+  fread(&binConstSize, sizeof(uint8_t), 4, binaryFile);
+  m->constSize = read_uint32(binConstSize);
 
-  int constantSizeInt = read_uint32(m->constantSize);
-  m->constantData = (word_t *) malloc(sizeof(byte_t) * constantSizeInt);
-  fread(&m->constantData, sizeof(byte_t), constantSizeInt, binaryFile);
+  uint8_t constants[m->constSize];
+  fread(&constants, sizeof(uint8_t), m->constSize, binaryFile);
 
-  fseek(binaryFile, 4, SEEK_CUR);
-  m->textSize = (byte_t *) malloc(sizeof(byte_t) * 4);
-  fread(&m->textSize, sizeof(byte_t), 4, binaryFile);
-  
-  int textSizeInt = get_text_size(m);
-  m->textData = (byte_t *) malloc(sizeof(byte_t) * textSizeInt);
-  fread(&m->textData, sizeof(byte_t), textSizeInt, binaryFile);
+  uint8_t binTextSize[4];
+  fread(&binTextSize, sizeof(uint8_t), 4, binaryFile);
+  fread(&binTextSize, sizeof(uint8_t), 4, binaryFile);
+  m->textSize = read_uint32(binTextSize);
 
+  uint8_t text[m->textSize];
+  fread(&text, sizeof(uint8_t), m->textSize, binaryFile);
+ 
   return m;
 
-  /*
-  Ask vlad if there is a more readable way to implement the fread statements
-  Ask how to run the debugger I cant read well enough to use the manual sorry Vlad :'(
+  /* TO ASK:
+    better way to function out fread (does fread counter continue on different function calls)
   */
 }
 
 void destroy_ijvm(ijvm* m) 
 {
   // TODO: implement me
-  free(m->constantSize);
-  free(m->constantData);
-  free(m->textSize);
-  free(m->textData);
 
   free(m); // free memory for struct
 }
@@ -67,20 +60,19 @@ void destroy_ijvm(ijvm* m)
 byte_t *get_text(ijvm* m) 
 {
   // TODO: implement me
-  return m->textData;
+  return 0;
 }
 
 unsigned int get_text_size(ijvm* m) 
 {
   // TODO: implement me
-  int size = read_uint32(m->textSize);
-  return size;
+  return m->textSize;
 }
 
 word_t get_constant(ijvm* m,int i) 
 {
   // TODO: implement me
-  return m->constantData[i];
+  return 0;
 }
 
 unsigned int get_program_counter(ijvm* m) 

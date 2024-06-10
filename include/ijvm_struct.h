@@ -16,7 +16,9 @@ typedef struct IJVM {
     FILE *out;  // use for example fprintf(ijvm->out, "%c", value); to print value to out
 
   // your variables go here
-  uint32_t textSize, constSize;
+  
+  byte_t * constantSize, * textSize, * textData;
+  word_t * constantData;
 
 } ijvm;
 
