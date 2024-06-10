@@ -18,11 +18,10 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
   m->out = output;
   
   // TODO: implement me
-  
-  FILE* binaryFile = fopen(binary_path, "rb");
+  FILE * binaryFile = fopen(binary_path, "rb");
 
-  byte_t *magicNumberBin = (byte_t *) malloc(sizeof(byte_t) * 4);
-  fread(&magicNumberBin, sizeof(byte_t), 4, binaryFile);
+  byte_t * magicNumberBin = (byte_t *) malloc(sizeof(byte_t) * 4);
+  fread(magicNumberBin, sizeof(byte_t), 4, binaryFile);
 
   int fileMagicNumber = read_uint32(magicNumberBin);
   if (fileMagicNumber != MAGIC_NUMBER) {
@@ -31,25 +30,28 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
 
   fseek(binaryFile, 4, SEEK_CUR);
   m->constantSize = (byte_t *) malloc(sizeof(byte_t) * 4);
-  fread(&m->constantSize, sizeof(byte_t), 4, binaryFile);
+  fread(m->constantSize, sizeof(byte_t), 4, binaryFile);
 
   int constantSizeInt = read_uint32(m->constantSize);
-  m->constantData = (word_t *) malloc(sizeof(byte_t) * constantSizeInt);
-  fread(&m->constantData, sizeof(byte_t), constantSizeInt, binaryFile);
+  m->constantData = (byte_t *) malloc(sizeof(byte_t) * constantSizeInt);
+  fread(m->constantData, sizeof(byte_t), constantSizeInt, binaryFile);
 
   fseek(binaryFile, 4, SEEK_CUR);
   m->textSize = (byte_t *) malloc(sizeof(byte_t) * 4);
-  fread(&m->textSize, sizeof(byte_t), 4, binaryFile);
+  fread(m->textSize, sizeof(byte_t), 4, binaryFile);
   
   int textSizeInt = get_text_size(m);
   m->textData = (byte_t *) malloc(sizeof(byte_t) * textSizeInt);
-  fread(&m->textData, sizeof(byte_t), textSizeInt, binaryFile);
+  fread(m->textData, sizeof(byte_t), textSizeInt, binaryFile);
+
+  fclose(binaryFile);
 
   return m;
 
   /*
   Ask vlad if there is a more readable way to implement the fread statements
-  Ask how to run the debugger I cant read well enough to use the manual sorry Vlad :'(
+  Constant pool words or bytes???
+  line 85 is 129 chars long lol how do i shorten this shit
   */
 }
 
@@ -80,7 +82,7 @@ unsigned int get_text_size(ijvm* m)
 word_t get_constant(ijvm* m,int i) 
 {
   // TODO: implement me
-  return m->constantData[i];
+  return (m->constantData[4*i] << 24) | (m->constantData[4*i+1] << 16) | (m->constantData[4*i+2] << 8) | m->constantData[4*i+3];
 }
 
 unsigned int get_program_counter(ijvm* m) 
