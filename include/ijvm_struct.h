@@ -17,8 +17,16 @@ typedef struct IJVM {
 
   // your variables go here
   
-  byte_t * constantSize, * textSize, * textData, * constantData;
+  byte_t * constantSize, * textSize, * textData; 
+  word_t * constantData;
+  int programCounter;
+
+  struct Stack;
 
 } ijvm;
+
+struct Stack {
+  word_t * address;
+} stack;
 
 #endif 

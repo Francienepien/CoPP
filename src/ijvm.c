@@ -18,6 +18,7 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
   m->out = output;
   
   // TODO: implement me
+  m->programCounter=0;
   FILE * binaryFile = fopen(binary_path, "rb");
 
   byte_t * magicNumberBin = (byte_t *) malloc(sizeof(byte_t) * 4);
@@ -33,7 +34,7 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
   fread(m->constantSize, sizeof(byte_t), 4, binaryFile);
 
   int constantSizeInt = read_uint32(m->constantSize);
-  m->constantData = (byte_t *) malloc(sizeof(byte_t) * constantSizeInt);
+  m->constantData = (word_t *) malloc(sizeof(byte_t) * constantSizeInt);
   fread(m->constantData, sizeof(byte_t), constantSizeInt, binaryFile);
 
   fseek(binaryFile, 4, SEEK_CUR);
@@ -47,12 +48,6 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
   fclose(binaryFile);
 
   return m;
-
-  /*
-  Ask vlad if there is a more readable way to implement the fread statements
-  Constant pool words or bytes???
-  line 85 is 129 chars long lol how do i shorten this shit
-  */
 }
 
 void destroy_ijvm(ijvm* m) 
@@ -82,7 +77,7 @@ unsigned int get_text_size(ijvm* m)
 word_t get_constant(ijvm* m,int i) 
 {
   // TODO: implement me
-  return (m->constantData[4*i] << 24) | (m->constantData[4*i+1] << 16) | (m->constantData[4*i+2] << 8) | m->constantData[4*i+3];
+  return swap_uint32(m->constantData[i]);
 }
 
 unsigned int get_program_counter(ijvm* m) 
