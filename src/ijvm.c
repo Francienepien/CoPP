@@ -17,8 +17,8 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
   m->in = input;
   m->out = output;
   
-  // TODO: implement me
   m->programCounter=0;
+  m->finished = false;
   FILE * binaryFile = fopen(binary_path, "rb");
 
   byte_t * magicNumberBin = (byte_t *) malloc(sizeof(byte_t) * 4);
@@ -47,56 +47,54 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
 
   fclose(binaryFile);
 
+  m->stack = createStack(4);
+
   return m;
 }
 
 void destroy_ijvm(ijvm* m) 
 {
-  // TODO: implement me
   free(m->constantSize);
   free(m->constantData);
   free(m->textSize);
   free(m->textData);
 
-  free(m); // free memory for struct
+  free(m);
 }
 
 byte_t *get_text(ijvm* m) 
 {
-  // TODO: implement me
   return m->textData;
 }
 
 unsigned int get_text_size(ijvm* m) 
 {
-  // TODO: implement me
   int size = read_uint32(m->textSize);
   return size;
 }
 
 word_t get_constant(ijvm* m,int i) 
 {
-  // TODO: implement me
   return swap_uint32(m->constantData[i]);
 }
 
 unsigned int get_program_counter(ijvm* m) 
 {
   // TODO: implement me
-  return 0;
+  return m->programCounter;
 }
 
 word_t tos(ijvm* m) 
 {
   // this operation should NOT pop (remove top element from stack)
   // TODO: implement me
-  return -1;
+  return top(m->stack);
 }
 
 bool finished(ijvm* m) 
 {
   // TODO: implement me
-  return false;
+  return m->finished;
 }
 
 word_t get_local_variable(ijvm* m, int i) 
@@ -108,6 +106,77 @@ word_t get_local_variable(ijvm* m, int i)
 void step(ijvm* m) 
 {
   // TODO: implement me
+  word_t operand1, operand2, result, var;
+
+  switch(get_instruction(m)) {
+    case 0x10: //BIPUSH
+      m->programCounter++;
+      push(m->stack, get_instruction(m));
+      m->programCounter++;
+      break;
+    case 0x59: //DUP
+      var = top(m->stack);
+      push(m->stack, var);
+      m->programCounter++;
+      break;
+    case 0x60: //IADD
+      operand1 = pop(m->stack);
+      operand2 = pop(m->stack);
+      result = operand1 + operand2;
+      push(m->stack, result);
+      m->programCounter++;
+      break;
+    case 0x7E: //IAND
+      operand1 = pop(m->stack);
+      operand2 = pop(m->stack);
+      result = operand1 & operand2;
+      push(m->stack, result);
+      m->programCounter++;
+      break;
+    case 0xB0: //IOR
+      operand1 = pop(m->stack);
+      operand2 = pop(m->stack);
+      result = operand1 | operand2;
+      push(m->stack, result);
+      m->programCounter++;
+      break;
+    case 0x64: //ISUB
+      operand1 = pop(m->stack);
+      operand2 = pop(m->stack);
+      result = operand1 - operand2;
+      push(m->stack, result);
+      m->programCounter++;
+      break;
+    case 0x00: //NOP
+      m->programCounter++;
+      break;
+    case 0x57: //POP
+      pop(m->stack);
+      break;
+    case 0x5F: //SWAP
+      operand1 = pop(m->stack);
+      operand2 = pop(m->stack);
+      push(m->stack, operand1);
+      push(m->stack, operand2);
+      break;
+    case 0xFE: //ERR
+      fprintf(m->out, "%s", "error");
+      m->finished = true;
+      break;
+    case 0xFF: //HALT
+      m->finished = true;
+      break;
+    case 0xFC: //IN
+      var = (word_t) fgetc(m->in);
+      push(m->stack, var);
+      break;
+    case 0xFD: //OUT
+      var = pop(m->stack);
+      fprintf(m->out, "%c", var);
+      break;
+    default:
+    break;
+  }
 
 }
 

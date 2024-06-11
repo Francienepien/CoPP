@@ -7,6 +7,7 @@
 
 #include "ijvm_types.h"
 #include "ijvm_struct.h"
+#include "stack.h"
 
 #define MAGIC_NUMBER 0x1DEADFAD
 

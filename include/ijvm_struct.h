@@ -5,6 +5,7 @@
 #include <stdio.h>  /* contains type FILE * */
 
 #include "ijvm_types.h"
+#include "stack.h"
 /**
  * All the state of your IJVM machine goes in this struct!
  **/
@@ -15,18 +16,15 @@ typedef struct IJVM {
                 // This will return EOF if no char is available.
     FILE *out;  // use for example fprintf(ijvm->out, "%c", value); to print value to out
 
-  // your variables go here
+    // your variables go here
   
-  byte_t * constantSize, * textSize, * textData; 
-  word_t * constantData;
-  int programCounter;
+    byte_t * constantSize, * textSize, * textData; 
+    word_t * constantData;
+    int programCounter;
+    bool finished;
 
-  struct Stack;
+    Stack* stack;
 
 } ijvm;
-
-struct Stack {
-  word_t * address;
-} stack;
 
 #endif 
