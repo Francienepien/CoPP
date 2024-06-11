@@ -48,6 +48,7 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
   fclose(binaryFile);
 
   m->stack = createStack(4);
+  m->instructionCount = textSizeInt;
 
   return m;
 }
@@ -107,11 +108,17 @@ void step(ijvm* m)
 {
   // TODO: implement me
   word_t operand1, operand2, result, var;
+  if (m->instructionCount-1 == m->programCounter) {
+    m->finished = true;
+    return;
+  }
 
   switch(get_instruction(m)) {
     case 0x10: //BIPUSH
       m->programCounter++;
-      push(m->stack, get_instruction(m));
+      int8_t signed_value = (int8_t)get_instruction(m);
+      word_t value = (word_t) signed_value;
+      push(m->stack, value);
       m->programCounter++;
       break;
     case 0x59: //DUP
@@ -143,7 +150,7 @@ void step(ijvm* m)
     case 0x64: //ISUB
       operand1 = pop(m->stack);
       operand2 = pop(m->stack);
-      result = operand1 - operand2;
+      result = operand2 - operand1;
       push(m->stack, result);
       m->programCounter++;
       break;
@@ -152,16 +159,19 @@ void step(ijvm* m)
       break;
     case 0x57: //POP
       pop(m->stack);
+      m->programCounter++;
       break;
     case 0x5F: //SWAP
       operand1 = pop(m->stack);
       operand2 = pop(m->stack);
       push(m->stack, operand1);
       push(m->stack, operand2);
+      m->programCounter++;
       break;
     case 0xFE: //ERR
       fprintf(m->out, "%s", "error");
       m->finished = true;
+      m->programCounter++;
       break;
     case 0xFF: //HALT
       m->finished = true;
@@ -169,10 +179,20 @@ void step(ijvm* m)
     case 0xFC: //IN
       var = (word_t) fgetc(m->in);
       push(m->stack, var);
+      m->programCounter++;
       break;
     case 0xFD: //OUT
       var = pop(m->stack);
       fprintf(m->out, "%c", var);
+      m->programCounter++;
+      break;
+    case 0xA7: //GOTO
+      break;
+    case 0x99: //IFEQ
+      break;
+    case 0x9B: //IFLT
+      break;
+    case 0x9F: //IF_ICMPEQ
       break;
     default:
     break;

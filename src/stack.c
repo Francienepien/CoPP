@@ -41,4 +41,5 @@ void resizeStack (Stack* stack) {
     if (tmp != NULL) {
         stack->basePointer = tmp;
     }
+    stack->capacity += 4;
 }
