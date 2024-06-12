@@ -33,6 +33,7 @@ word_t pop(Stack* stack) {
 }
 
 word_t top(Stack* stack) {
+    assert(stack->load > 0);
     return stack->basePointer[stack->load-1];
 }
 

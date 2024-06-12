@@ -2,6 +2,7 @@
 #include <stdlib.h> // malloc, free
 #include "ijvm.h"
 #include "util.h" // read this file for debug prints, endianness helper functions
+#include <assert.h>
 
 
 // see ijvm.h for descriptions of the below functions
@@ -178,6 +179,7 @@ void step(ijvm* m)
       break;
     case 0xFC: //IN
       var = (word_t) fgetc(m->in);
+      assert(var != EOF);
       push(m->stack, var);
       m->programCounter++;
       break;
@@ -186,18 +188,53 @@ void step(ijvm* m)
       fprintf(m->out, "%c", var);
       m->programCounter++;
       break;
-    case 0xA7: //GOTO
+    case 0xA7:; //GOTO
+      int16_t argument = get_short(m);
+      m->programCounter += argument;
       break;
     case 0x99: //IFEQ
+      if (pop(m->stack) == 0) {
+        int16_t argument = get_short(m);
+        m->programCounter += argument;
+      }
+      else {
+        m->programCounter += 3;
+      }
       break;
     case 0x9B: //IFLT
+      if (pop(m->stack) < 0) {
+        int16_t argument = get_short(m);
+        m->programCounter += argument;
+      }
+      else {
+        m->programCounter += 3;
+      }
       break;
     case 0x9F: //IF_ICMPEQ
+      operand1 = pop(m->stack);
+      operand2 = pop(m->stack);
+      if (operand1 == operand2) {
+        int16_t (argument) = get_short(m);
+        m->programCounter += argument;
+      }
+      else {
+        m->programCounter += 3;
+      }
       break;
     default:
+    dprintf("OPCODE doesn't exist\n");
     break;
   }
 
+}
+
+int16_t get_short(ijvm* m) {
+  m->programCounter++;
+  int8_t tmp = get_instruction(m);
+  m->programCounter++;
+  int16_t result = (int16_t) tmp << 8 | (int16_t) get_instruction(m);
+  m->programCounter -= 2;
+  return result;
 }
 
 byte_t get_instruction(ijvm* m) 

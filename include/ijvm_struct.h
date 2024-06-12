@@ -20,7 +20,7 @@ typedef struct IJVM {
   
     byte_t * constantSize, * textSize, * textData; 
     word_t * constantData;
-    int programCounter, instructionCount;
+    unsigned int programCounter, instructionCount;
     bool finished;
 
     Stack* stack;

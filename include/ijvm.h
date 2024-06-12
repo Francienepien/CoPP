@@ -172,4 +172,6 @@ int get_call_stack_size(ijvm* m);
 //
 bool is_heap_freed(ijvm* m,word_t reference);
 
+int16_t get_short(ijvm* m);
+
 #endif
