@@ -14,11 +14,15 @@ typedef struct STACK {
 
 Stack* createStack(int capacity);
 
-void push(Stack* programStack, word_t value);
+void push(Stack* stack, word_t value);
 
-word_t pop(Stack* programStack);
+void load_index(Stack* stack, int index);
 
-word_t top(Stack* programStack);
+word_t pop(Stack* stack);
+
+void store_index(Stack* stack, int index, word_t value);
+
+word_t top(Stack* stack);
 
 void resizeStack (Stack* stack);
 

@@ -49,6 +49,9 @@ ijvm* init_ijvm(char *binary_path, FILE* input , FILE* output)
   fclose(binaryFile);
 
   m->stack = createStack(4);
+  for (int i = 0; i < 256; i++) {
+    push(m->stack, 0);
+  }
   m->instructionCount = textSizeInt;
 
   return m;
@@ -102,13 +105,15 @@ bool finished(ijvm* m)
 word_t get_local_variable(ijvm* m, int i) 
 {
   // TODO: implement me
-  return 0;
+  return m->stack->basePointer[i];
 }
 
 void step(ijvm* m) 
 {
   // TODO: implement me
   word_t operand1, operand2, result, var;
+  int16_t argument, location;
+  int8_t signedValue;
   if (m->instructionCount-1 == m->programCounter) {
     m->finished = true;
     return;
@@ -117,8 +122,8 @@ void step(ijvm* m)
   switch(get_instruction(m)) {
     case 0x10: //BIPUSH
       m->programCounter++;
-      int8_t signed_value = (int8_t)get_instruction(m);
-      word_t value = (word_t) signed_value;
+      signedValue = (int8_t)get_instruction(m);
+      word_t value = (word_t) signedValue;
       push(m->stack, value);
       m->programCounter++;
       break;
@@ -189,12 +194,12 @@ void step(ijvm* m)
       m->programCounter++;
       break;
     case 0xA7:; //GOTO
-      int16_t argument = get_short(m);
+      argument = get_short(m);
       m->programCounter += argument;
       break;
     case 0x99: //IFEQ
       if (pop(m->stack) == 0) {
-        int16_t argument = get_short(m);
+        argument = get_short(m);
         m->programCounter += argument;
       }
       else {
@@ -203,7 +208,7 @@ void step(ijvm* m)
       break;
     case 0x9B: //IFLT
       if (pop(m->stack) < 0) {
-        int16_t argument = get_short(m);
+        argument = get_short(m);
         m->programCounter += argument;
       }
       else {
@@ -214,13 +219,71 @@ void step(ijvm* m)
       operand1 = pop(m->stack);
       operand2 = pop(m->stack);
       if (operand1 == operand2) {
-        int16_t (argument) = get_short(m);
+        argument = get_short(m);
         m->programCounter += argument;
       }
       else {
         m->programCounter += 3;
       }
       break;
+    case 0x13: //LDC_W
+      argument = get_short(m);
+      push(m->stack, get_constant(m, argument));
+      m->programCounter += 3;
+      break;
+    case 0x15: //ILOAD
+      m->programCounter++;
+      location = (int16_t) get_instruction(m);
+      load_index(m->stack, location);
+      m->programCounter++;
+      break;
+    case 0x36: //ISTORE
+      m->programCounter++;
+      location = (int16_t) get_instruction(m);
+      store_index(m->stack, location, pop(m->stack));
+      m->programCounter++;
+      break;
+    case 0x84: //IINC
+      m->programCounter++;
+      location = (int16_t) get_instruction(m);
+      m->programCounter++;
+      signedValue = get_instruction(m);
+      m->stack->basePointer[location] += signedValue;
+      m->programCounter++;
+      break;
+    case 0xC4: //WIDE
+      m->programCounter++;
+      switch(get_instruction(m)) {
+        case 0x15: //ILOAD
+          location = get_short(m);
+          m->programCounter += 2;
+          load_index(m->stack, location);
+          m->programCounter++;
+          break;
+        case 0x36: //ISTORE
+          location = get_short(m);
+          m->programCounter += 2;
+          store_index(m->stack, location, pop(m->stack));
+          m->programCounter++;
+          break;
+        case 0x84: //IINC
+          location = get_short(m);
+          m->programCounter += 3;
+          signedValue = get_instruction(m);
+          m->stack->basePointer[location] += signedValue;
+          m->programCounter++;
+          break;
+      }
+      break;
+    
+    case 0xB6: //INVOKEVIRTUAL
+
+      break;
+    
+    case 0xAC: //IRETURN
+    
+      break;
+    
     default:
     dprintf("OPCODE doesn't exist\n");
     break;

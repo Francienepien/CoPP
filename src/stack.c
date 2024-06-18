@@ -25,11 +25,26 @@ void push(Stack* stack, word_t value) {
     }
 }
 
+void load_index (Stack* stack, int index) {
+    if (stack->load < stack->capacity) {
+        stack->basePointer[stack->load] = stack->basePointer[index];
+        stack->load++;
+    }
+    else {
+        resizeStack(stack);
+        load_index(stack, index);
+    }
+}
+
 word_t pop(Stack* stack) {
     assert(stack->load > 0);
     word_t var = top(stack);
     stack->load--;
     return var;
+}
+
+void store_index(Stack* stack, int index, word_t value) {
+    stack->basePointer[index] = value;
 }
 
 word_t top(Stack* stack) {
