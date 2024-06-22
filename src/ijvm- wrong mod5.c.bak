@@ -277,11 +277,43 @@ void step(ijvm* m)
       break;
     
     case 0xB6: //INVOKEVIRTUAL
+      m->programCounter++;
+      location = get_short(m);
+      m->programCounter+=2;
+      var = get_constant(m, location);
+
+      m->programCounter = var - 1;
+
+      operand1 = get_instruction(m); //no. of arguments (including objref)
+      m->programCounter++; 
+      operand2 = get_instruction(m); //no. of local variables
+
       
+
+      m->stack->stackPointer -= operand1;
+
+      m->stack->basePointer = m->stack->stackPointer;
+
+      push(m->stack, m->stack->stackPointer + operand1 + operand2);
+
+      m->stack->stackPointer += operand1 - 1;
+
+      m->stack->stackPointer += operand2;
+      
+      push(m->stack, m->programCounter);
+      push(m->stack, m->stack->stackPointer);
+      push(m->stack, m->stack->basePointer);
       break;
     
     case 0xAC: //IRETURN
-      
+      m->returnValue = pop(m);
+
+      m->programCounter = *m->stack->basePointer;
+      m->stack->stackPointer = *(m->stack->basePointer + 1);
+      m->stack->basePointer = *(m->stack->basePointer + 2);
+
+      push(m->stack, m->returnValue);
+
       break;
     
     default:

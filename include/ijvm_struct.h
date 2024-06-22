@@ -19,7 +19,7 @@ typedef struct IJVM {
     // your variables go here
   
     byte_t * constantSize, * textSize, * textData; 
-    word_t * constantData;
+    word_t * constantData, returnValue;
     unsigned int programCounter, instructionCount;
     bool finished;
 

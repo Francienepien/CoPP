@@ -9,14 +9,16 @@
 Stack* createStack(int capacity) {
     Stack* stack = (Stack *) malloc(sizeof(Stack));
     stack->basePointer = malloc(sizeof(word_t)*capacity);
-    stack->capacity=capacity;
+    stack->stackPointer = stack->basePointer;
+    stack->capacity = capacity;
     stack->load = 0;
     return stack;
 }
 
 void push(Stack* stack, word_t value) {
     if (stack->load < stack->capacity) {
-        stack->basePointer[stack->load] = value;
+        *stack->stackPointer = value;
+        stack->stackPointer++;
         stack->load++;
     }
     else {
@@ -27,7 +29,8 @@ void push(Stack* stack, word_t value) {
 
 void load_index (Stack* stack, int index) {
     if (stack->load < stack->capacity) {
-        stack->basePointer[stack->load] = stack->basePointer[index];
+        *stack->stackPointer = stack->basePointer[index];
+        stack->stackPointer++;
         stack->load++;
     }
     else {
@@ -39,6 +42,7 @@ void load_index (Stack* stack, int index) {
 word_t pop(Stack* stack) {
     assert(stack->load > 0);
     word_t var = top(stack);
+    stack->stackPointer--;
     stack->load--;
     return var;
 }
@@ -49,13 +53,14 @@ void store_index(Stack* stack, int index, word_t value) {
 
 word_t top(Stack* stack) {
     assert(stack->load > 0);
-    return stack->basePointer[stack->load-1];
+    return *(stack->stackPointer - 1);
 }
 
 void resizeStack (Stack* stack) {
     word_t * tmp = realloc(stack->basePointer, (sizeof(word_t)*(stack->capacity+4)));
-    if (tmp != NULL) {
-        stack->basePointer = tmp;
-    }
+    assert (tmp != NULL);
+    stack->basePointer = tmp;
+    stack->stackPointer = stack->basePointer + stack->load;
+    
     stack->capacity += 4;
 }
