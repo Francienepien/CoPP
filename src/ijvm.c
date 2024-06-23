@@ -99,7 +99,7 @@ word_t tos(ijvm* m)
 bool finished(ijvm* m) 
 {
   // TODO: implement me
-  return m->finished;
+  return m->programCounter >= m->instructionCount;
 }
 
 word_t get_local_variable(ijvm* m, int i) 
@@ -114,17 +114,12 @@ void step(ijvm* m)
   word_t operand1, operand2, result, var;
   int16_t argument, location;
   int8_t signedValue;
-  if (m->instructionCount-1 == m->programCounter) {
-    m->finished = true;
-    return;
-  }
 
   switch(get_instruction(m)) {
     case 0x10: //BIPUSH
       m->programCounter++;
       signedValue = (int8_t)get_instruction(m);
       word_t value = (word_t) signedValue;
-      dprintf("value: %d\n\n", value);
       push(m->stack, value);
       m->programCounter++;
       break;
@@ -177,10 +172,12 @@ void step(ijvm* m)
       break;
     case 0xFE: //ERR
       fprintf(m->out, "%s", "error");
+      m->programCounter = m->instructionCount;
       m->finished = true;
       m->programCounter++;
       break;
     case 0xFF: //HALT
+      m->programCounter = m->instructionCount;
       m->finished = true;
       break;
     case 0xFC: //IN
@@ -256,7 +253,6 @@ void step(ijvm* m)
       m->programCounter++;
       switch(get_instruction(m)) {
         case 0x15: //ILOAD
-          dprintf("YIPPEE\n");
           location = get_short(m);
           m->programCounter += 2;
           load_index(m->stack, location);
@@ -290,18 +286,18 @@ void step(ijvm* m)
       operand2 = get_short(m); //no. of local variables
       m->programCounter  += 3;
 
-      m->stack->stackPointer += operand2 + 1;
+      m->stack->stackPointer += operand2;
 
       push(m->stack, oldProgramCounter);
       push(m->stack, m->stack->baseIndex);
 
       m->stack->stackPointer -= 2 + operand1 + operand2;
       m->stack->baseIndex = m->stack->stackPointer;
-      dprintf("stackpointer: %d\nbaseindex: %d\n\n", m->stack->stackPointer, m->stack->baseIndex);
-
+      
       push(m->stack, operand1 + operand2);
 
       m->stack->stackPointer += operand1 + operand2 + 1;
+
       break;
     
     case 0xAC: //IRETURN
@@ -309,22 +305,16 @@ void step(ijvm* m)
 
       word_t LV = get_local_variable(m, 0);
 
-      dprintf("stackpointer: %d\n", m->stack->baseIndex + LV);
-
       m->stack->stackPointer = m->stack->baseIndex + LV + 1;
 
       m->programCounter = pop(m->stack);
-
-      dprintf("DIKKE PIK: %d\n",m->programCounter);
 
       m->stack->stackPointer += 2;
       word_t baseIndex = pop(m->stack);
       m->stack->stackPointer = m->stack->baseIndex;
       m->stack->baseIndex = baseIndex;
-      m->stack->basePointer = &(m->stack->basePointer[baseIndex]);
 
       push(m->stack, m->returnValue);
-
       break;
     
     default:
@@ -332,6 +322,7 @@ void step(ijvm* m)
     break;
   }
 
+  return;
 }
 
 int16_t get_short(ijvm* m) {

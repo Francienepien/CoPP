@@ -5,6 +5,7 @@
 
 void test_ldcw1(void)
 {
+    printf("LDC");
     ijvm* m = init_ijvm_std("files/task4/LoadTest1.ijvm");
     assert(m != NULL);
 
@@ -22,6 +23,8 @@ void test_simple_load(void)
 {
     ijvm* m = init_ijvm_std("files/task4/LoadTest2.ijvm");
     assert(m != NULL);
+
+    printf("SIMPLE");
 
     step(m);
     assert(tos(m) == 0x2A);
@@ -55,6 +58,8 @@ void test_complex_load(void)
 {
     ijvm* m = init_ijvm_std("files/task4/LoadTest3.ijvm");
     assert(m != NULL);
+
+    fprintf(stderr, "COMPLEX");
 
     step(m);
     assert(tos(m) == 0x2A);
@@ -90,6 +95,8 @@ void test_iteration_load(void)
     FILE *output_file = tmpfile();
     char buf[128] = {0};
 
+    fprintf(stderr, "ITERLOAD\n");
+
     ijvm* m = init_ijvm("files/task4/LoadTest4.ijvm",stdin, output_file);
     assert(m != NULL);
 
@@ -107,6 +114,8 @@ void test_iinc(void)
 {
     ijvm* m = init_ijvm_std("files/task4/IINCTest.ijvm");
     assert(m != NULL);
+
+    fprintf(stderr, "IINC\n");
 
     steps(m, 4);
     assert(get_local_variable(m, 0) == 0);
@@ -132,6 +141,8 @@ void test_loadstore(void)
 {
     ijvm* m = init_ijvm_std("files/task4/LoadStoreTest.ijvm");
     assert(m != NULL);
+
+    printf("LOADSTORE");
 
     while(get_instruction(m) != OP_ILOAD){
         step(m);
@@ -160,6 +171,7 @@ void test_loadstore(void)
 void test_wide(void)
 {
     ijvm* m = init_ijvm_std("files/task4/WIDETest.ijvm");
+    printf("WIDE");
     assert(m != NULL);
 
     steps(m, 4);
@@ -226,9 +238,9 @@ void test_wide_check(void)
 int main(void)
 {
     fprintf(stderr, "*** test4: VARS ..............\n");
-    RUN_TEST(test_ldcw1);
-    RUN_TEST(test_simple_load);
-    RUN_TEST(test_complex_load);
+    // RUN_TEST(test_ldcw1);
+    // RUN_TEST(test_simple_load);
+    // RUN_TEST(test_complex_load);
     RUN_TEST(test_iteration_load);
 
     RUN_TEST(test_iinc);

@@ -36,7 +36,6 @@ void test_invoke1(void)
 
 void test_ireturn1(void)
 {
-    printf("test 3:\n");
     ijvm* m = init_ijvm_std("files/task5/test-invokevirtual1.ijvm");
     assert(m != NULL);
 
@@ -52,6 +51,8 @@ void test_invoke2(void)
 {
     ijvm* m = init_ijvm_std("files/task5/test-invokevirtual2.ijvm");
     assert(m != NULL);
+
+    printf("Test 4:\n\n");
 
     steps(m, 5);
     int pc = get_program_counter(m);
@@ -131,9 +132,11 @@ void test_nested_invoke_simple(void)
     int addone_pc = get_program_counter(m) + 3;
     steps(m, 2);
     assert(get_program_counter(m) != addone_pc);
+    // printf("GOAL: %d\n", magic_pc);
     assert(get_program_counter(m) == magic_pc);
     step(m);
     assert(get_program_counter(m) != magic_pc);
+    // printf("GOAL: %d\n", main_pc);
     assert(get_program_counter(m) == main_pc);
 
     destroy_ijvm(m);
@@ -177,6 +180,7 @@ void test_nested_invoke(void)
 void test_nested_frame(void)
 {
     ijvm* m = init_ijvm_std("files/task5/test-nestedinvoke-frame.ijvm");
+    printf("NESTED FRAME\n");
     assert(m != NULL);
 
     steps(m, 7);
@@ -212,6 +216,7 @@ void test_recursion(void)
     ijvm* m = init_ijvm_std("files/task5/recursive_sum.ijvm");
     assert(m != NULL);
 
+    printf("RECURSION\n");
 
     while(get_instruction(m)!=OP_IAND){
         step(m);
@@ -223,6 +228,9 @@ void test_recursion(void)
 void test_fib(void)
 {
     ijvm* m = init_ijvm_std("files/task5/fib.ijvm");
+
+    printf("FIB\n");
+
     assert(m != NULL);
     run(m);
     assert(get_local_variable(m, 0) == 10946);
@@ -233,8 +241,8 @@ void test_fib(void)
 int main(void)
 {
     fprintf(stderr, "*** test5: METHODS ...........\n");
-    // RUN_TEST(test_invokenoargs);
-    // RUN_TEST(test_invoke1);
+    RUN_TEST(test_invokenoargs);
+    RUN_TEST(test_invoke1);
     RUN_TEST(test_ireturn1);
     RUN_TEST(test_invoke2);
     RUN_TEST(test_ireturn2);

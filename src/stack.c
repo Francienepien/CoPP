@@ -20,6 +20,7 @@ Stack* createStack(int capacity) {
 void push(Stack* stack, word_t value) {
     if (stack->load < stack->capacity) {
         stack->basePointer[stack->stackPointer] = value;
+        
 
         stack->stackPointer++;
         stack->load++;
@@ -32,7 +33,7 @@ void push(Stack* stack, word_t value) {
 
 void load_index (Stack* stack, int index) {
     if (stack->load < stack->capacity) {
-        stack->basePointer[stack->stackPointer] = stack->basePointer[index];
+        stack->basePointer[stack->stackPointer] = stack->basePointer[stack->baseIndex+index];
         stack->stackPointer++;
         stack->load++;
     }
