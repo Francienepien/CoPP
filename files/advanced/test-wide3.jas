@@ -32778,16 +32778,16 @@ temp32767
 .end-var
       BIPUSH 0x1
       WIDE
-      ISTORE temp0
+      ISTORE temp0  // 6
       BIPUSH 0x2
       WIDE
-      ISTORE temp32767
+      ISTORE temp32767  // 8
       WIDE
       IINC temp0 4
       WIDE
       IINC temp32767 8
       WIDE
-      ILOAD temp0
+      ILOAD temp0   // 11
       WIDE
       ILOAD temp32767
       HALT

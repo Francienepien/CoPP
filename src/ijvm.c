@@ -63,6 +63,8 @@ void destroy_ijvm(ijvm* m)
   free(m->constantData);
   free(m->textSize);
   free(m->textData);
+  free(m->stack->basePointer);
+  free(m->stack);
 
   free(m);
 }
@@ -112,7 +114,8 @@ void step(ijvm* m)
 {
   // TODO: implement me
   word_t operand1, operand2, result, var;
-  int16_t argument, location;
+  int16_t argument;
+  uint16_t location;
   int8_t signedValue;
 
   switch(get_instruction(m)) {
@@ -182,7 +185,9 @@ void step(ijvm* m)
       break;
     case 0xFC: //IN
       var = (word_t) fgetc(m->in);
-      assert(var != EOF);
+      if (var == EOF) {
+        var = 0;
+      }
       push(m->stack, var);
       m->programCounter++;
       break;
@@ -259,16 +264,16 @@ void step(ijvm* m)
           m->programCounter++;
           break;
         case 0x36: //ISTORE
-          location = get_short(m);
+          location = (uint16_t) get_short(m);
           m->programCounter += 2;
           store_index(m->stack, location, pop(m->stack));
           m->programCounter++;
           break;
         case 0x84: //IINC
-          location = get_short(m);
+          location = (uint16_t) get_short(m);
           m->programCounter += 3;
           signedValue = get_instruction(m);
-          m->stack->basePointer[location] += signedValue;
+          m->stack->basePointer[m->stack->baseIndex + location] += signedValue;
           m->programCounter++;
           break;
       }
@@ -281,10 +286,18 @@ void step(ijvm* m)
 
       m->programCounter = var - 1;
 
-      operand1 = get_short(m); //no. of arguments (including objref)
+      operand1 = (uint16_t) get_short(m); //no. of arguments (including objref)
       m->programCounter  += 2; 
-      operand2 = get_short(m); //no. of local variables
+      operand2 = (uint16_t) get_short(m); //no. of local variables
       m->programCounter  += 3;
+
+      if (m->stack->stackPointer + operand1 + operand2 > m->stack->capacity) {
+        word_t * tmpPointer = realloc(m->stack->basePointer, (sizeof(word_t)*(m->stack->capacity+operand1+operand2)));
+        assert (tmpPointer != NULL);
+        m->stack->basePointer = tmpPointer;
+        m->stack->reallocPointer = tmpPointer;
+        m->stack->capacity += operand1 + operand2;
+      }
 
       m->stack->stackPointer += operand2;
 
@@ -318,7 +331,7 @@ void step(ijvm* m)
       break;
     
     default:
-    dprintf("OPCODE doesn't exist\n");
+    assert(!"OPCODE doesn't exist\n");
     break;
   }
 

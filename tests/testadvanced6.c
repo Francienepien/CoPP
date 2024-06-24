@@ -83,8 +83,9 @@ static bool is_fast_enough(ijvm* m)
 {
     int i;
     clock_t start = clock();
-    for(i = 0; !finished(m) && i < 200000; i++)
+    for(i = 0; !finished(m) && i < 200000; i++) {
         step(m);
+    }
 
     clock_t end = clock();
 
@@ -93,6 +94,7 @@ static bool is_fast_enough(ijvm* m)
     const static double max_allowed = 0.70;
 
     double seconds = ((double) end - start) / CLOCKS_PER_SEC;
+    printf("time: %f\n", seconds);
     return seconds < max_allowed;
 }
 

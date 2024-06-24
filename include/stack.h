@@ -21,7 +21,7 @@ void load_index(Stack* stack, int index);
 
 word_t pop(Stack* stack);
 
-void store_index(Stack* stack, int index, word_t value);
+void store_index(Stack* stack, unsigned int index, word_t value);
 
 word_t top(Stack* stack);
 
