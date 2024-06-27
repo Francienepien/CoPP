@@ -6,61 +6,48 @@
 
 #include "stack.h"
 
-Stack* createStack(int capacity) {
-    Stack* stack = (Stack *) malloc(sizeof(Stack));
-    stack->basePointer = malloc(sizeof(word_t)*capacity);
-    stack->baseIndex = 0;
-    stack->stackPointer = 0;
+Stack *create_stack(int capacity)
+{
+    Stack *stack = (Stack *)malloc(sizeof(Stack));
+    stack->base_pointer = malloc(sizeof(word_t) * capacity);
+    stack->base_index = 0;
+    stack->stack_pointer = 0;
     stack->capacity = capacity;
     return stack;
 }
 
-void push(Stack* stack, word_t value) {
-    if(stack->stackPointer < stack->capacity) {
-        stack->basePointer[stack->stackPointer] = value;
-        stack->stackPointer++;
+void push(Stack *stack, word_t value)
+{
+    if (stack->stack_pointer < stack->capacity)
+    {
+        stack->base_pointer[stack->stack_pointer] = value;
+        stack->stack_pointer++;
     }
-    else {
-        resizeStack(stack);
+    else
+    {
+        resize_stack(stack);
         push(stack, value);
     }
 }
 
-void load_index (Stack* stack, int index) {
-    if (stack->stackPointer < stack->capacity) {
-        stack->basePointer[stack->stackPointer] = stack->basePointer[stack->baseIndex+index];
-        stack->stackPointer++;
-    }
-    else {
-        resizeStack(stack);
-        load_index(stack, index);
-    }
-}
-
-word_t pop(Stack* stack) {
-    assert(stack->stackPointer >= 0);
+word_t pop(Stack *stack)
+{
+    assert(stack->stack_pointer >= 0);
     word_t var = top(stack);
-    stack->stackPointer--;
+    stack->stack_pointer--;
     return var;
 }
 
-void store_index(Stack* stack, unsigned int index, word_t value) {
-    stack->basePointer[stack->baseIndex + index] = value;
+word_t top(Stack *stack)
+{
+    assert(stack->stack_pointer >= 0);
+    return stack->base_pointer[stack->stack_pointer - 1];
 }
 
-word_t top(Stack* stack) {
-    assert(stack->stackPointer >= 0);
-    return stack->basePointer[stack->stackPointer - 1];
-}
-
-void resizeStack (Stack* stack) {
-    word_t * tmp = realloc(stack->basePointer, (sizeof(word_t)*(stack->capacity+4)));
-    assert (tmp != NULL);
-    stack->basePointer = tmp;
-    stack->reallocPointer = tmp;
+void resize_stack(Stack *stack)
+{
+    word_t *tmp = realloc(stack->base_pointer, (sizeof(word_t) * (stack->capacity + 4)));
+    assert(tmp != NULL);
+    stack->base_pointer = tmp;
     stack->capacity += 4;
-}
-
-void adjust_stack_pointer(Stack* stack, int index) {
-    stack->stackPointer += index;
 }

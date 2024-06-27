@@ -4,29 +4,22 @@
 
 #include "ijvm_types.h"
 
-typedef struct STACK {
-    int capacity;
-    int load;
-    word_t top;
-    word_t stackPointer;
-    word_t * basePointer, * reallocPointer;
-    word_t baseIndex;
+typedef struct STACK
+{
+    unsigned int capacity, load, stack_pointer, base_index;
+    word_t *base_pointer;
 } Stack;
 
-Stack* createStack(int capacity);
+Stack *create_stack(int capacity);
 
-void push(Stack* stack, word_t value);
+void push(Stack *stack, word_t value);
 
-void load_index(Stack* stack, int index);
+word_t pop(Stack *stack);
 
-word_t pop(Stack* stack);
+word_t top(Stack *stack);
 
-void store_index(Stack* stack, unsigned int index, word_t value);
+void resize_stack(Stack *stack);
 
-word_t top(Stack* stack);
-
-void resizeStack (Stack* stack);
-
-void adjust_stack_pointer(Stack* stack, int index);
+void adjust_stack_pointer(Stack *stack, int index);
 
 #endif

@@ -2,7 +2,7 @@
 #ifndef IJVM_STRUCT_H
 #define IJVM_STRUCT_H
 
-#include <stdio.h>  /* contains type FILE * */
+#include <stdio.h> /* contains type FILE * */
 
 #include "ijvm_types.h"
 #include "stack.h"
@@ -10,21 +10,22 @@
  * All the state of your IJVM machine goes in this struct!
  **/
 
-typedef struct IJVM {
+typedef struct IJVM
+{
     // do not changes these two variables
-    FILE *in;   // use fgetc(ijvm->in) to get a character from in.
-                // This will return EOF if no char is available.
-    FILE *out;  // use for example fprintf(ijvm->out, "%c", value); to print value to out
+    FILE *in;  // use fgetc(ijvm->in) to get a character from in.
+               // This will return EOF if no char is available.
+    FILE *out; // use for example fprintf(ijvm->out, "%c", value); to print value to out
 
     // your variables go here
-  
-    byte_t * constantSize, * textSize, * textData; 
-    word_t * constantData, returnValue;
-    unsigned int programCounter, instructionCount;
+
+    byte_t *constant_size, *text_size, *text_data;
+    word_t *constant_data;
+    unsigned int program_counter, instruction_count;
     bool finished;
 
-    Stack* stack;
+    Stack *stack;
 
 } ijvm;
 
-#endif 
+#endif

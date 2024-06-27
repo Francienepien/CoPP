@@ -24,50 +24,49 @@ the granularity with a single variable.
 Example: d2printf("Current program text %02x %02x\n", text[pc] , text[pc+1]);
 */
 
-// endianness helper functions 
+// endianness helper functions
 uint32_t swap_uint32(uint32_t num);
 uint16_t swap_uint16(uint16_t num);
 int32_t swap_int32(int32_t num);
 int16_t swap_int16(int16_t num);
-uint32_t read_uint32(uint8_t* buf) ;
-uint16_t read_uint16(uint8_t* buf) ;
-int32_t read_int32(uint8_t* buf) ;
-int16_t read_int16(uint8_t* buf) ;
+uint32_t read_uint32(uint8_t *buf);
+uint16_t read_uint16(uint8_t *buf);
+int32_t read_int32(uint8_t *buf);
+int16_t read_int16(uint8_t *buf);
 
-#if DEBUG_LEVEL >= 1 
+#if DEBUG_LEVEL >= 1
 #define dprintf(...) \
-    fprintf(stderr,   __VA_ARGS__)
+    fprintf(stderr, __VA_ARGS__)
 #else
 #define dprintf(...)
 #endif
 
-#if DEBUG_LEVEL >= 2 
+#if DEBUG_LEVEL >= 2
 #define d2printf(...) \
-    fprintf(stderr,   __VA_ARGS__)
+    fprintf(stderr, __VA_ARGS__)
 #else
 #define d2printf(...)
 #endif
 
-#if DEBUG_LEVEL >= 3 
+#if DEBUG_LEVEL >= 3
 #define d3printf(...) \
-    fprintf(stderr,   __VA_ARGS__)
+    fprintf(stderr, __VA_ARGS__)
 #else
 #define d3printf(...)
 #endif
 
-#if DEBUG_LEVEL >= 4 
+#if DEBUG_LEVEL >= 4
 #define d4printf(...) \
-    fprintf(stderr,  __VA_ARGS__)
+    fprintf(stderr, __VA_ARGS__)
 #else
 #define d4printf(...)
 #endif
 
 #if DEBUG_LEVEL >= 5
 #define d5printf(...) \
-    fprintf(stderr,  __VA_ARGS__)
+    fprintf(stderr, __VA_ARGS__)
 #else
 #define d5printf(...)
 #endif
-
 
 #endif

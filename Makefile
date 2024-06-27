@@ -103,11 +103,11 @@ build_tests: test1 test2 test3 test4 test5 testadvanced1 testadvanced2 testadvan
 
 
 # Uses LLVM sanitizers
-testasan: CC=clang
+testasan: CC=gcc
 testasan: CFLAGS += -fsanitize=undefined,address
 testasan: clean testall
 
-testmemsan: CC=clang
+testmemsan: CC=gcc
 testmemsan: CFLAGS += -fsanitize=undefined,memory
 testmemsan: clean testall
 
