@@ -8,7 +8,6 @@ void test_tailfib(void)
     ijvm *m = init_ijvm_std("files/bonus/tailfib.ijvm");
     assert(m != NULL);
     run(m);
-    printf("TEST: %ld\n", get_local_variable(m, 0));
     assert(get_local_variable(m, 0) == 433494437);
     destroy_ijvm(m);
 }
@@ -68,5 +67,6 @@ int main(void)
 {
     RUN_TEST(test_tailfib);
     RUN_TEST(testTC);
+    RUN_TEST(test_out_of_memory);
     return END_TEST();
 }

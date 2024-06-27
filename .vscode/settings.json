@@ -5,6 +5,7 @@
     "files.associations": {
         "ijvm_struct.h": "c",
         "memory_resource": "cpp",
-        "testutil.h": "c"
+        "testutil.h": "c",
+        "functional": "c"
     }
 }

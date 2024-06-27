@@ -2,6 +2,8 @@
 #include <stdlib.h> // malloc, free
 #include "ijvm.h"
 #include "util.h" // read this file for debug prints, endianness helper functions
+#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <assert.h>
 
 // see ijvm.h for descriptions of the below functions
@@ -473,12 +475,16 @@ void call_ireturn(ijvm *m)
 
 void call_tailcall(ijvm *m)
 {
-  unsigned int LV = m->stack->base_pointer[m->stack->base_index];
-  // printf("fetching OPC AT: %d\n", m->stack->base_index);
-  int old_program_counter = m->stack->base_pointer[m->stack->base_index + LV];
-  // printf("tailcall OPC: %d\n", old_program_counter);
   uint16_t location = get_short(m);       // fetch objref pos
   word_t var = get_constant(m, location); // fetch program_counter pointed to by objref
+
+  unsigned int LV = m->stack->base_pointer[m->stack->base_index];
+
+  word_t old_program_counter = m->stack->base_pointer[m->stack->base_index + LV];
+  int tmp = m->stack->stack_pointer;
+  m->stack->stack_pointer = m->stack->base_index + LV + 2;
+  int prev_base_index = pop(m->stack);
+  m->stack->stack_pointer = tmp;
 
   m->program_counter = var - 1;
 
@@ -494,13 +500,13 @@ void call_tailcall(ijvm *m)
 
   for (int i = arg_count + lv_count; i > 0; i--)
   {
-    m->stack->base_pointer[m->stack->base_index + i] = pop(m->stack);
+    m->stack->base_pointer[m->stack->base_index + i - 1] = pop(m->stack);
   }
 
-  m->stack->stack_pointer = m->stack->base_index + LV - 1;
+  m->stack->stack_pointer = m->stack->base_index + arg_count + lv_count;
 
   push(m->stack, old_program_counter);
-  push(m->stack, m->stack->base_index);
+  push(m->stack, prev_base_index);
 
   m->stack->base_pointer[m->stack->base_index] = arg_count + lv_count;
 }

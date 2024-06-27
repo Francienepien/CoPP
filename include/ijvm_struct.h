@@ -22,10 +22,7 @@ typedef struct IJVM
     byte_t *constant_size, *text_size, *text_data;
     word_t *constant_data;
     unsigned int program_counter, instruction_count;
-    bool finished;
-
     Stack *stack;
-
 } ijvm;
 
 #endif

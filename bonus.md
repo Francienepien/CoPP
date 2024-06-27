@@ -1,1 +1,3 @@
-Please describe any bonuses you implemented (this file is included in your submission)
+Additional bonusses completed: Tailcall.
+
+Additional bonusses attempted but not finished: Heap, Networking.
